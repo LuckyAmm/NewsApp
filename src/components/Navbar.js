@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function Navbar(props) {
   return (
-    <div className='bg-orange-500 text-white flex px-4 py-2 justify-between items-center transition-all'>
+    <div className='bg-blue-500 text-white flex px-4 py-2 justify-between items-center transition-all'>
       <span className='text-xl  '>{props.title}</span>
           <div className='links flex space-x-5'>
               <Link to='/' className='hover:text-gray-300' >Home</Link>

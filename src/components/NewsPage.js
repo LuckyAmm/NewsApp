@@ -3,30 +3,40 @@ import NewsItem from './NewsItem'
 import axios from 'axios';
 import Spinner from './Spinner';
 import InfiniteScroll from "react-infinite-scroll-component";
+import LoadingBar from "react-top-loading-bar";
+
 
 
 export default function NewsPage(props) {
     const [loading, setLoading] = useState(false);
     const [totalArticles, setTotalArticles] = useState(0);
     const [page, setPage] = useState(1);
-    const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState([]);
+    const [progress, setProgress] = useState(0);
+
 
   // const fetchData = async() => {
     
   // }
-  const fetchData = async() => {
+  const fetchData = async () => {
+    setProgress(10);
       setLoading(true);
       axios
         .get(
           `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`
-        )
-        .then((response) => {
+      )
+    setProgress(30)        
+    .then((response) => {
+          setProgress(50)        
           const res = response.data;
           setArticles([...articles, ...res.articles]);
+          setProgress(70)        
           setTotalArticles(res.totalResults);
           setLoading(false);
+          setProgress(90)        
         });
-    }
+        setProgress(100)        
+      }
     const getMorePost = () => {
       setPage(page + 1);
     }
@@ -41,6 +51,11 @@ export default function NewsPage(props) {
 
     return (
       <div className="flex flex-col items-center">
+        <LoadingBar
+          color="#f11946"
+          progress={progress}
+          onLoaderFinished={() => setProgress(0)}
+        />
         <h1 className="font-bold text-3xl mt-3">
           Hello ! Welcome 2 News Point -- Check the Daily News Here -{" "}
           {totalArticles}
@@ -50,25 +65,25 @@ export default function NewsPage(props) {
           dataLength={articles.length}
           next={getMorePost}
           hasMore={totalArticles !== articles.length}
-          loader={<div className='flex items-center justify-center'><Spinner /></div>}
+          loader={
+            <div className="flex items-center justify-center">
+              <Spinner />
+            </div>
+          }
           endMessage={<h4>Nothing more to show</h4>}
         >
           <div className="w-fit p-5 grid grid-cols-1 gap-x-20 gap-y-10 md:grid-cols-2 md:p-2 md:gap-x-5 lg:grid-cols-3 ">
             {articles.map((element, i) => {
-                return (
-                  <NewsItem
-                    key={i}
-                    title={!element.title ? "No Title" : element.title}
-                    urlToImage={element.urlToImage}
-                    desc={
-                      !element.description
-                        ? "No desc"
-                        : element.description
-                    }
-                    url={element.url}
-                  />
-                );
-              })}
+              return (
+                <NewsItem
+                  key={i}
+                  title={!element.title ? "No Title" : element.title}
+                  urlToImage={element.urlToImage}
+                  desc={!element.description ? "No desc" : element.description}
+                  url={element.url}
+                />
+              );
+            })}
           </div>
         </InfiniteScroll>
 
